@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "OTP Manager Browser Extension",
+    "version": "0.1",
+  
+    "description": "Browser extension to access TOTP and HOTP codes stored in the Nextcloud app OTP Manager",
+  
+    "icons": {
+        "48": "icon48.png",
+        "96": "icon96.png"
+    },
+  
+    "host_permissions": [
+        "http://*/",
+        "https://*/"
+    ],
+
+    "action": {
+        "default_icon": "icon48.png",
+        "default_title": "OTP Manager",
+        "default_popup": "popup.html"
+      }
+    
+  }
+  

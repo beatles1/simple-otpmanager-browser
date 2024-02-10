@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- jQuery -->
+        <script src="lib/jquery.min.js"></script>
+    
+        <!-- Semantic UI-->
+        <link rel="stylesheet" href="lib/fomantic/semantic.min.css" />
+        <script src="lib/fomantic/semantic.min.js"></script>
+        
+        <!-- Extension JS file -->
+        <script src="connect.js"></script>
+        <script src="displayotp.js"></script>
+
+        <!-- Page specific Style -->
+        <style>
+            body {
+                /* background: rgb(245, 245, 245); */
+                background: rgb(00, 100, 200);
+                padding: 30px;
+                width: 350px;
+                height: 500px;
+            }
+            #title-header {
+                margin-bottom: 40px;
+            }
+        </style>
+
+    </head>
+    <body>
+        <h1 class="ui center aligned inverted header" id="title-header">OTP Manager</h1>
+        
+        <div class="ui fluid labeled link icon input" id="server-input">
+            <div class="ui label">
+                https://
+            </div>
+            <input type="text" placeholder="nextcloud.server">
+            <i class="arrow right link icon"></i>
+        </div>
+
+        <div class="ui negative hidden message" id="server-input-error">
+            <p></p>
+        </div>
+
+        <!-- <div class="ui form">
+            <div class="field"></div>
+            <button class="ui fluid button" type="submit">Submit</button>
+        </div> -->
+    </body>
+</html>
