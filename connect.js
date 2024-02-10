@@ -2,6 +2,7 @@ function showConnectError(text) {
     $("#server-input-error p").text(text)
     $("#server-input-error").show(50)
     $("#server-input").removeClass("loading disabled")
+    $("#server-input i").addClass("link")
 }
 
 function getInputtedServerURL() {
@@ -37,6 +38,7 @@ async function getOTPManagerAccounts(server) {
 
 async function connectToNextcloud() {
     $("#server-input").addClass("loading disabled")
+    $("#server-input i").removeClass("link")
 
     // Get server URL either saved or from form
     var server = localStorage.getItem("otpmanager-browser_server")
