@@ -4,7 +4,7 @@ function showConnectError(text) {
     $("#server-input").removeClass("loading disabled")
 }
 
-function getNextcloudServerURL() {
+function getInputtedServerURL() {
     var server = $("#server-input input").val()
     if (!server) {
         showConnectError("Please enter Nextcloud server address")
@@ -38,18 +38,22 @@ async function getOTPManagerAccounts(server) {
 async function connectToNextcloud() {
     $("#server-input").addClass("loading disabled")
 
-    // Check and get a proper url
-    var server = getNextcloudServerURL()
-    if (!server) {
-        return false
-    }
-
-    // Request permission to load the specific Nextcloud server. By default we've requested *.* but we have to then specifically ask for domains under that.
-    var permission = { origins: [server+ "/"] }
-    var permReq = await browser.permissions.request(permission)
-    if (!permReq) {
-        showConnectError("Not granted permissions to connect")
-        return
+    // Get server URL either saved or from form
+    var server = localStorage.getItem("otpmanager-browser_server")
+    if (server) {
+        $("#server-input input").val(server.replace("https://", ""))
+    } else {
+        server = getInputtedServerURL()
+        if (!server) {
+            return false
+        }
+        // Request permission to load the specific Nextcloud server. We've requested *.* but we have to then specifically ask for domains under that.
+        var permission = { origins: [server+ "/"] }
+        var permReq = await browser.permissions.request(permission)
+        if (!permReq) {
+            showConnectError("Not granted permissions to connect")
+            return
+        }
     }
 
     // Check if it's a Nextcloud server
@@ -77,6 +81,9 @@ async function connectToNextcloud() {
         return
     }
 
+    // Save URL as we've been successful
+    localStorage.setItem("otpmanager-browser_server", server)
+
     // Pass over to displayotp.js
     displayOtp(accounts)
 }
@@ -88,4 +95,9 @@ $( document ).ready( function() {
         if (e.which === 13) connectToNextcloud()
     })
     $("#server-input i").on("click", connectToNextcloud)
+
+    // Check if we have a saved URL
+    if (localStorage.getItem("otpmanager-browser_server")) {
+        connectToNextcloud()
+    }
 })
