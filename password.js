@@ -5,15 +5,15 @@ function startPasswordCheck() {
     $("#password-input-container").show()
 
     $("#password-input input").keypress(function(e) {
-        if (e.which === 13) checkPassword()
+        if (e.which === 13) checkPassword(false)
     })
-    $("#password-input i").on("click", checkPassword)
+    $("#password-input i").on("click", function() {checkPassword(false)})
 
     $("#password-input input").focus()
 
     // Check if we have a saved URL
     if (localStorage.getItem("otpmanager-browser_saved_password")) {
-        checkPassword()
+        checkPassword(true)
     }
 }
 
@@ -22,13 +22,22 @@ function showPasswordError(text) {
     $("#password-input-error").show(50)
     $("#password-input").removeClass("loading disabled")
     $("#password-input i").addClass("link")
+    $("#password-input input").val("")
+    $("#save-password-checkbox").removeClass("disabled")
 }
 
-async function checkPassword() {
+async function checkPassword(useSaved) {
     $("#password-input").addClass("loading disabled")
     $("#password-input i").removeClass("link")
+    $("#save-password-checkbox").addClass("disabled")
 
     var pass = $("#password-input input").val()
+
+    if (useSaved) {
+        pass = localStorage.getItem("otpmanager-browser_saved_password")
+        $("#password-input input").val("*".repeat(16))
+        $("#save-password-checkbox input").prop('checked', true);
+    }
 
     if (!pass) {
         showPasswordError("Please enter a password")
@@ -60,6 +69,11 @@ async function checkPassword() {
     // Password is okay and we've stored IV
     console.log("Password OK")
     window.password = pass
+
+    if ($("#save-password-checkbox input").prop('checked')) {
+        localStorage.setItem("otpmanager-browser_saved_password", pass)
+    }    
+
     $("#password-input-container").hide(100)
     displayOtp()
 }

@@ -39,13 +39,14 @@ async function getOTPManagerAccounts(server) {
     }
 }
 
-async function connectToNextcloud() {
+async function connectToNextcloud(useSaved) {
     $("#server-input").addClass("loading disabled")
     $("#server-input i").removeClass("link")
 
     // Get server URL either saved or from form
-    var server = localStorage.getItem("otpmanager-browser_server")
-    if (server) {
+    var server = false
+    if (useSaved) {
+        server = localStorage.getItem("otpmanager-browser_server")
         $("#server-input input").val(server.replace("https://", ""))
     } else {
         server = getInputtedServerURL()
@@ -100,14 +101,14 @@ async function connectToNextcloud() {
 // Register event handlers for url box
 $( document ).ready( function() {
     $("#server-input input").keypress(function(e) {
-        if (e.which === 13) connectToNextcloud()
+        if (e.which === 13) connectToNextcloud(false)
     })
-    $("#server-input i").on("click", connectToNextcloud)
+    $("#server-input i").on("click", function() {connectToNextcloud(false)})
 
     $("#server-input input").focus()
 
     // Check if we have a saved URL
     if (localStorage.getItem("otpmanager-browser_server")) {
-        connectToNextcloud()
+        connectToNextcloud(true)
     }
 })
