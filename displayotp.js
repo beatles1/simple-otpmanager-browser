@@ -52,7 +52,7 @@ function generateAccountSegment(account) {
                     '<div class="twelve wide column">'+
                         '<div>'+ account.name +'</div>'+
                         '<div><span class="ui grey text">'+ account.issuer +'</span></div>'+
-                        '<span class="ui big text">'+ getOtpFromAccount(account) +'</span>'+
+                        '<span class="ui big link text otpcode">'+ getOtpFromAccount(account) +'</span><i class="copy outline icon"></i>'+
                     '</div>'+
                 '</div>'+
             '</div>'
@@ -72,4 +72,10 @@ function displayOtp() {
         console.log(account)
         $("#otp-container").append(generateAccountSegment(account))
     });
+
+    // Copy code on click
+    $(".otpcode").on("click", function() {
+        navigator.clipboard.writeText($(this).text())
+        $(this).fadeOut(200).fadeIn(200)
+    })
 }
