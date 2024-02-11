@@ -4,7 +4,6 @@ function getAlgorithm(n) {
 
 function getOtpFromAccount(account) {
     const passHash = CryptoJS.SHA256(window.password).toString()
-    console.log("passHash", passHash)
 
     const key = CryptoJS.enc.Hex.parse(passHash);
     const parsedIv = CryptoJS.enc.Hex.parse(window.accountIV);
@@ -50,9 +49,9 @@ function generateAccountSegment(account) {
                         '<div>logo</div>'+
                     '</div>'+
                     '<div class="twelve wide column">'+
-                        '<div>'+ account.name +'</div>'+
-                        '<div><span class="ui grey text">'+ account.issuer +'</span></div>'+
-                        '<span class="ui big link text otpcode">'+ getOtpFromAccount(account) +'</span><i class="copy outline icon"></i>'+
+                        '<div class="accountname">'+ account.name +'</div>'+
+                        '<div><span class="ui grey text accountissuer">'+ account.issuer +'</span></div>'+
+                        '<div class="otpcode"><span class="ui big text">'+ getOtpFromAccount(account) +'</span> <i class="copy outline icon"></i></div>'+
                     '</div>'+
                 '</div>'+
             '</div>'
@@ -64,18 +63,35 @@ function displayOtp() {
         // Should display user error and go back to start
     }
 
-    $("#otp-container").empty()
-
+    $("#otps").empty()
     $("#otp-container").show()
+    $("#otp-search input").focus()
 
     window.accounts.forEach(account => {
-        console.log(account)
-        $("#otp-container").append(generateAccountSegment(account))
+        $("#otps").append(generateAccountSegment(account))
     });
 
     // Copy code on click
     $(".otpcode").on("click", function() {
-        navigator.clipboard.writeText($(this).text())
+        navigator.clipboard.writeText($(this).find("span").text())
         $(this).fadeOut(200).fadeIn(200)
+    })
+
+    // Search
+    $("#otp-search input").keyup(searchOtp)
+    $("#otp-search i").on("click", searchOtp)
+}
+
+function searchOtp() {
+    var term = $("#otp-search input").val().toLowerCase()
+
+    $("#otps .segment").each(function(i) {
+        var accountissuer = $(this).find(".accountissuer").text().toLowerCase()
+        var accountname = $(this).find(".accountname").text().toLowerCase()
+        if (accountname.includes(term) || accountissuer.includes(term)) {
+            $(this).show()
+        } else {
+            $(this).hide()
+        }
     })
 }

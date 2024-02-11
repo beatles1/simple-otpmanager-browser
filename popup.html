@@ -35,6 +35,7 @@
             }
             .otpcode {
                 cursor: pointer;
+                padding-top: 10px;
             }
         </style>
 
@@ -81,8 +82,16 @@
 
         <!-- OTP codes container -->
         <div class="ui container" id="otp-container" style="display: none;">
+            <div class="ui fluid icon input" id="otp-search">
+                <i class="search link icon"></i>
+                <input type="text" placeholder="Search...">
+            </div>
 
+            <br />
+
+            <div id="otps"></div>
         </div>
+        <br />
 
     </body>
 </html>
