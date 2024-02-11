@@ -8,6 +8,12 @@
         <link rel="stylesheet" href="lib/fomantic/semantic.min.css" />
         <script src="lib/fomantic/semantic.min.js"></script>
         
+        <!-- Crypto-JS -->
+        <script src="lib/crypto-js.min.js"></script>
+
+        <!-- otpauth -->
+        <script src="lib/otpauth.umd.min.js"></script>
+
         <!-- Extension JS file -->
         <script src="connect.js"></script>
         <script src="password.js"></script>
@@ -16,11 +22,10 @@
         <!-- Page specific Style -->
         <style>
             body {
-                /* background: rgb(245, 245, 245); */
                 background: rgb(00, 100, 200);
                 padding: 30px;
                 width: 350px;
-                height: 500px;
+                /* height: 500px; */
             }
             #title-header {
                 margin-bottom: 40px;
@@ -69,6 +74,11 @@
             <div class="ui negative hidden message" id="password-input-error">
                 <p></p>
             </div>
+        </div>
+
+        <!-- OTP codes container -->
+        <div class="ui container" id="otp-container" style="display: none;">
+
         </div>
 
     </body>

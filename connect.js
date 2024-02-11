@@ -1,4 +1,4 @@
-window.encrypted_accounts = false
+window.accounts = false
 window.server = false
 
 function showConnectError(text) {
@@ -30,10 +30,10 @@ async function getOTPManagerAccounts(server) {
     try {
         var response = await fetch(server+ "/apps/otpmanager/accounts",)
         var jsonData = await response.json()
-        if (!response.ok) {
+        if (!response.ok || !jsonData.accounts) {
             return false
         }
-        return jsonData
+        return jsonData.accounts
     } catch {
         return false
     }
@@ -86,7 +86,7 @@ async function connectToNextcloud(useSaved) {
         showConnectError("Could not load accounts from OTP Manager. Please check you are logged into Nextcloud in this browser and the OTP Manager extension is installed.")
         return
     }
-    window.encrypted_accounts = accounts
+    window.accounts = accounts
 
     // Save URL as we've been successful
     localStorage.setItem("otpmanager-browser_server", server)
