@@ -1,3 +1,5 @@
 function displayOtp(accounts) {
-    console.log("accoints", accounts)
+    console.log("accounts", accounts)
+
+    //$("#otp-container").show()
 }

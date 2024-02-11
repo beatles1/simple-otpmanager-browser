@@ -1,3 +1,6 @@
+window.encrypted_accounts = false
+window.server = false
+
 function showConnectError(text) {
     $("#server-input-error p").text(text)
     $("#server-input-error").show(50)
@@ -82,12 +85,15 @@ async function connectToNextcloud() {
         showConnectError("Could not load accounts from OTP Manager. Please check you are logged into Nextcloud in this browser and the OTP Manager extension is installed.")
         return
     }
+    window.encrypted_accounts = accounts
 
     // Save URL as we've been successful
     localStorage.setItem("otpmanager-browser_server", server)
+    window.server = server
 
-    // Pass over to displayotp.js
-    displayOtp(accounts)
+    // Pass over to password.js
+    $("#server-input-container").hide(100)
+    startPasswordCheck()
 }
 
 
@@ -97,6 +103,8 @@ $( document ).ready( function() {
         if (e.which === 13) connectToNextcloud()
     })
     $("#server-input i").on("click", connectToNextcloud)
+
+    $("#server-input input").focus()
 
     // Check if we have a saved URL
     if (localStorage.getItem("otpmanager-browser_server")) {

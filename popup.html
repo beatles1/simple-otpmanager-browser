@@ -10,6 +10,7 @@
         
         <!-- Extension JS file -->
         <script src="connect.js"></script>
+        <script src="password.js"></script>
         <script src="displayotp.js"></script>
 
         <!-- Page specific Style -->
@@ -30,21 +31,37 @@
     <body>
         <h1 class="ui center aligned inverted header" id="title-header">OTP Manager</h1>
         
-        <div class="ui fluid labeled link icon input" id="server-input">
-            <div class="ui label">
-                https://
+
+        <!-- Server input container-->
+        <div class="ui container" id="server-input-container">
+            <div class="ui fluid labeled link icon input" id="server-input">
+                <div class="ui label">
+                    https://
+                </div>
+                <input type="text" placeholder="nextcloud.server">
+                <i class="arrow right link icon"></i>
             </div>
-            <input type="text" placeholder="nextcloud.server">
-            <i class="arrow right link icon"></i>
+
+            <div class="ui negative hidden message" id="server-input-error">
+                <p></p>
+            </div>
         </div>
 
-        <div class="ui negative hidden message" id="server-input-error">
-            <p></p>
+
+        <!-- Password input container-->
+        <div class="ui container" id="password-input-container" style="display: none;">
+            <div class="ui fluid labeled link icon input" id="password-input">
+                <div class="ui label">
+                    Password
+                </div>
+                <input type="password">
+                <i class="arrow right link icon"></i>
+            </div>
+
+            <div class="ui negative hidden message" id="password-input-error">
+                <p></p>
+            </div>
         </div>
 
-        <!-- <div class="ui form">
-            <div class="field"></div>
-            <button class="ui fluid button" type="submit">Submit</button>
-        </div> -->
     </body>
 </html>
