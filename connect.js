@@ -92,11 +92,20 @@ async function connectToNextcloud(useSaved) {
     localStorage.setItem("otpmanager-browser_server", server)
     window.server = server
 
+    // We've now got something saved so let the user "logout"
+    $("#sign-out-button").show(300)
+
     // Pass over to password.js
     $("#server-input-container").hide(100)
     startPasswordCheck()
 }
 
+function signOut() {
+    localStorage.removeItem("otpmanager-browser_server")
+    localStorage.removeItem("otpmanager-browser_saved_password")
+    location.reload()
+
+}
 
 // Register event handlers for url box
 $( document ).ready( function() {
@@ -106,6 +115,8 @@ $( document ).ready( function() {
     $("#server-input i").on("click", function() {connectToNextcloud(false)})
 
     $("#server-input input").focus()
+
+    $("#sign-out-button").on("click", signOut)
 
     // Check if we have a saved URL
     if (localStorage.getItem("otpmanager-browser_server")) {
