@@ -9,7 +9,7 @@ function showConnectError(text) {
 }
 
 function getInputtedServerURL() {
-    var server = $("#server-input input").val()
+    let server = $("#server-input input").val()
     if (!server) {
         showConnectError("Please enter Nextcloud server address")
         return false
@@ -20,7 +20,7 @@ function getInputtedServerURL() {
     server = server.replace(/\/+$/, "")    // Remove trailing /
 
 
-    if (server.search(/https:\/\/|http:\/\//gm) == -1) {
+    if (server.search(/https:\/\/|http:\/\//gm) === -1) {
         return "https://"+ server
     }
     return server
@@ -28,8 +28,8 @@ function getInputtedServerURL() {
 
 async function getOTPManagerAccounts(server) {
     try {
-        var response = await fetch(server+ "/apps/otpmanager/accounts",)
-        var jsonData = await response.json()
+        const response = await fetch(server+ "/apps/otpmanager/accounts",)
+        const jsonData = await response.json()
         if (!response.ok || !jsonData.accounts) {
             return false
         }
@@ -44,7 +44,7 @@ async function connectToNextcloud(useSaved) {
     $("#server-input i").removeClass("link")
 
     // Get server URL either saved or from form
-    var server = false
+    let server = false
     if (useSaved) {
         server = localStorage.getItem("otpmanager-browser_server")
         $("#server-input input").val(server.replace("https://", ""))
@@ -54,8 +54,8 @@ async function connectToNextcloud(useSaved) {
             return false
         }
         // Request permission to load the specific Nextcloud server. We've requested *.* but we have to then specifically ask for domains under that.
-        var permission = { origins: [server+ "/"] }
-        var permReq = await browser.permissions.request(permission)
+        const permission = { origins: [server+ "/"] }
+        const permReq = await browser.permissions.request(permission)
         if (!permReq) {
             showConnectError("Not granted permissions to connect")
             return
@@ -64,8 +64,8 @@ async function connectToNextcloud(useSaved) {
 
     // Check if it's a Nextcloud server
     try {
-        var response = await fetch(server+ "/status.php",)
-        var jsonData = await response.json()
+        const response = await fetch(server+ "/status.php",)
+        const jsonData = await response.json()
         if (!response.ok) {
             showConnectError("Could not confirm URL is Nextcloud server")
             return
@@ -81,7 +81,7 @@ async function connectToNextcloud(useSaved) {
     }
 
     // Try and connect to OTP Manager
-    var accounts = await getOTPManagerAccounts(server)
+    const accounts = await getOTPManagerAccounts(server)
     if (!accounts) {
         showConnectError("Could not load accounts from OTP Manager. Please check you are logged into Nextcloud in this browser and the OTP Manager extension is installed.")
         return

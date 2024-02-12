@@ -31,7 +31,7 @@ async function checkPassword(useSaved) {
     $("#password-input i").removeClass("link")
     $("#save-password-checkbox").addClass("disabled")
 
-    var pass = $("#password-input input").val()
+    let pass = $("#password-input input").val()
 
     if (useSaved) {
         pass = localStorage.getItem("otpmanager-browser_saved_password")
@@ -46,8 +46,8 @@ async function checkPassword(useSaved) {
 
     // Check password against server & store IV
     try {
-        var response = await fetch(window.server+ "/apps/otpmanager/password/check", {method: "POST", headers: {"Content-Type": "application/json",}, body: JSON.stringify({password: pass})})
-        var jsonData = await response.json()
+        const response = await fetch(window.server+ "/apps/otpmanager/password/check", {method: "POST", headers: {"Content-Type": "application/json",}, body: JSON.stringify({password: pass})})
+        const jsonData = await response.json()
         if (!response.ok) {
             if (response.status === 400) {
                 showPasswordError(jsonData.error)

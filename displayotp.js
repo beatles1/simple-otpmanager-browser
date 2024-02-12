@@ -9,10 +9,10 @@ function getOtpFromAccount(account) {
     const parsedIv = CryptoJS.enc.Hex.parse(window.accountIV);
     const dec = CryptoJS.AES.decrypt(account.secret, key, { iv: parsedIv });
 
-    var secret = dec.toString(CryptoJS.enc.Utf8);
+    const secret = dec.toString(CryptoJS.enc.Utf8);
 
     if (account.type == "totp") {
-        var totp = new OTPAuth.TOTP({
+        const totp = new OTPAuth.TOTP({
           issuer: account.issuer,
           label: account.name,
           algorithm: getAlgorithm(account.algorithm),
@@ -26,7 +26,7 @@ function getOtpFromAccount(account) {
         if (account.counter == 0) {
           account.code = "Click the button to generate HOTP code";
         } else {
-          var hotp = new OTPAuth.HOTP({
+          const hotp = new OTPAuth.HOTP({
             issuer: account.issuer,
             label: account.name,
             algorithm: getAlgorithm(account.algorithm),
@@ -80,11 +80,11 @@ function displayOtp() {
 }
 
 function searchOtp() {
-    var term = $("#otp-search input").val().toLowerCase()
+    const term = $("#otp-search input").val().toLowerCase()
 
     $("#otp-list .segment").each(function(i) {
-        var accountissuer = $(this).find(".accountissuer").text().toLowerCase()
-        var accountname = $(this).find(".accountname").text().toLowerCase()
+        const accountissuer = $(this).find(".accountissuer").text().toLowerCase()
+        const accountname = $(this).find(".accountname").text().toLowerCase()
         if (accountname.includes(term) || accountissuer.includes(term)) {
             $(this).show()
         } else {
