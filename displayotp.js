@@ -46,7 +46,7 @@ function generateAccountSegment(account) {
     return '<div class="ui segment">' +
                 '<div class="ui grid">' +
                     '<div class="four wide column">'+
-                        '<div>logo</div>'+
+                        '<div><img src="'+ (account.icon === "default" ? "img/vpn-key.svg" : "https://cdn.simpleicons.org/"+ account.icon) +'" /></div>'+
                     '</div>'+
                     '<div class="twelve wide column">'+
                         '<div class="accountname">'+ account.name +'</div>'+
