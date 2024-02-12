@@ -43,18 +43,15 @@ function getOtpFromAccount(account) {
 }
 
 function generateAccountSegment(account) {
-    return '<div class="ui segment">' +
-                '<div class="ui grid">' +
-                    '<div class="four wide column">'+
-                        '<div><img src="'+ (account.icon === "default" ? "img/vpn-key.svg" : "https://cdn.simpleicons.org/"+ account.icon) +'" /></div>'+
-                    '</div>'+
-                    '<div class="twelve wide column">'+
-                        '<div class="accountname">'+ account.name +'</div>'+
-                        '<div><span class="ui grey text accountissuer">'+ account.issuer +'</span></div>'+
-                        '<div class="otpcode"><span class="ui big text">'+ getOtpFromAccount(account) +'</span> <i class="copy outline icon"></i></div>'+
-                    '</div>'+
-                '</div>'+
-            '</div>'
+    const template = document.querySelector("#otp-template")
+    const clone = template.content.cloneNode(true)
+    const icon = account.icon === "default" ? "img/vpn-key.svg" : "https://cdn.simpleicons.org/"+ account.icon
+    clone.querySelector(".accounticon").src = icon
+    clone.querySelector(".accountname").textContent = account.name
+    clone.querySelector(".accountissuer").textContent = account.issuer
+    clone.querySelector(".otpcode span").textContent = getOtpFromAccount(account)
+
+    document.querySelector("#otp-list").appendChild(clone)
 }
 
 function displayOtp() {
@@ -68,7 +65,7 @@ function displayOtp() {
     $("#otp-search input").focus()
 
     window.accounts.forEach(account => {
-        $("#otp-list").append(generateAccountSegment(account))
+        generateAccountSegment(account)
     });
 
     // Copy code on click

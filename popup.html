@@ -96,9 +96,27 @@
 
             <br />
 
-            <div id="otp-list"></div>
+            <div id="otp-list">
+
+            </div>
         </div>
         <br />
+
+        <!-- Template for OTP segment -->
+        <template id="otp-template">
+            <div class="ui segment">
+                <div class="ui grid">
+                    <div class="four wide column">
+                        <div><img class="accounticon" src="{account.icon}" /></div>
+                    </div>
+                    <div class="twelve wide column">
+                        <div class="accountname">{account.name}</div>
+                        <div><span class="ui grey text accountissuer">{account.issuer}</span></div>
+                        <div class="otpcode"><span class="ui big text">{otpcode}</span> <i class="copy outline icon"></i></div>
+                    </div>
+                </div>
+            </div>
+        </template>
 
     </body>
 </html>
