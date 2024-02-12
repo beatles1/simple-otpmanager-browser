@@ -63,12 +63,12 @@ function displayOtp() {
         // Should display user error and go back to start
     }
 
-    $("#otps").empty()
+    $("#otp-list").empty()
     $("#otp-container").show()
     $("#otp-search input").focus()
 
     window.accounts.forEach(account => {
-        $("#otps").append(generateAccountSegment(account))
+        $("#otp-list").append(generateAccountSegment(account))
     });
 
     // Copy code on click
@@ -85,7 +85,7 @@ function displayOtp() {
 function searchOtp() {
     var term = $("#otp-search input").val().toLowerCase()
 
-    $("#otps .segment").each(function(i) {
+    $("#otp-list .segment").each(function(i) {
         var accountissuer = $(this).find(".accountissuer").text().toLowerCase()
         var accountname = $(this).find(".accountname").text().toLowerCase()
         if (accountname.includes(term) || accountissuer.includes(term)) {
