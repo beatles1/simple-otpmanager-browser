@@ -3,7 +3,7 @@
     "name": "OTP Manager Browser Extension",
     "version": "0.1",
   
-    "description": "Browser extension to access TOTP and HOTP codes stored in the Nextcloud app OTP Manager",
+    "description": "Browser extension to access TOTP and HOTP codes stored in the OTP Manager Nextcloud app",
   
     "icons": {
         "48": "img/icon48.png",
