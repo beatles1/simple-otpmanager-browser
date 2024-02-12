@@ -55,7 +55,7 @@ async function connectToNextcloud(useSaved) {
         }
         // Request permission to load the specific Nextcloud server. We've requested *.* but we have to then specifically ask for domains under that.
         const permission = { origins: [server+ "/"] }
-        const permReq = await browser.permissions.request(permission)
+        const permReq = await chrome.permissions.request(permission)    // Should be browser. but chrome is too important for that
         if (!permReq) {
             showConnectError("Not granted permissions to connect")
             return
