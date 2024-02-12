@@ -10,7 +10,7 @@
         "96": "img/icon96.png"
     },
   
-    "optional_host_permissions": [
+    "host_permissions": [
         "http://*/",
         "https://*/"
     ],
