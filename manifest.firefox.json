@@ -19,6 +19,12 @@
         "default_icon": "img/icon48.png",
         "default_title": "OTP Manager",
         "default_popup": "popup.html"
-      }
-    
+    },
+
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "{7bb1f5d8-56c8-4c72-a7b9-0f539a7feefd}"
+        }
+    }
+
   }
