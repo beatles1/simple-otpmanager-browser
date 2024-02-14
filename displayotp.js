@@ -49,7 +49,15 @@ function generateAccountSegment(account) {
     clone.querySelector(".accounticon").src = icon
     clone.querySelector(".accountname").textContent = account.name
     clone.querySelector(".accountissuer").textContent = account.issuer
-    clone.querySelector(".otpcode span").textContent = getOtpFromAccount(account)
+
+    const otpValue = getOtpFromAccount(account)
+    let otpText = window.settings.hideOTP ? "******" : otpValue
+    if (window.settings.splitOTP) {
+      const m = Math.floor(otpText.length/2)
+      otpText = otpText.substring(0, m) +" "+ otpText.substring(m)
+    }
+    clone.querySelector(".otpcode span").textContent = otpText
+    clone.querySelector(".otpcode span").setAttribute("data-otpvalue", otpValue)
 
     document.querySelector("#otp-list").appendChild(clone)
 }
@@ -60,9 +68,10 @@ function displayOtp() {
         // Should display user error and go back to start
     }
 
+    $("#settings-button").show(300)
+
     $("#otp-list").empty()
     $("#otp-container").show()
-    $("#otp-search input").focus()
 
     window.accounts.forEach(account => {
         generateAccountSegment(account)
@@ -70,13 +79,15 @@ function displayOtp() {
 
     // Copy code on click
     $(".otpcode").on("click", function() {
-        navigator.clipboard.writeText($(this).find("span").text())
+        navigator.clipboard.writeText($(this).find("span").attr("data-otpvalue"))
         $(this).fadeOut(200).fadeIn(200)
     })
 
     // Search
     $("#otp-search input").keyup(searchOtp)
     $("#otp-search i").on("click", searchOtp)
+
+    if($("#settings-container").is(":hidden")) $("#otp-search input").focus()
 }
 
 function searchOtp() {

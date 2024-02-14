@@ -18,6 +18,7 @@
         <script src="connect.js"></script>
         <script src="password.js"></script>
         <script src="displayotp.js"></script>
+        <script src="settings.js"></script>
 
         <!-- Page specific Style -->
         <style>
@@ -42,6 +43,14 @@
                 top: 20px;
                 right: 15px;
             }
+            #settings-button {
+                position: absolute;
+                top: 20px;
+                left: 15px;
+            }
+            #settings-container {
+                margin-bottom: 20px;
+            }
             .accountname, .accountissuer {
                 overflow: scroll;
             }
@@ -50,8 +59,29 @@
     </head>
     <body>
         <div id="sign-out-button" style="display: none;"><i class="large inverted sign out alternate link icon"></i></div>
+        <div id="settings-button" style="display: none;"><i class="large inverted cog link icon"></i></div>
 
         <h1 class="ui center aligned inverted header" id="title-header">OTP Manager</h1>
+
+        <!-- Settings container-->
+        <div class="ui container" id="settings-container" style="display: none;">
+            <div class="ui segment">
+                <h3 class="ui center aligned header">Settings</h3>
+
+                <div class="ui sub header">Display</div>
+                <div class="ui toggle checkbox" id="settings-hide-otp-checkbox">
+                    <input type="checkbox">
+                    <label>Hide OTP codes</label>
+                </div>
+                <div class="ui toggle checkbox" id="settings-split-otp-checkbox">
+                    <input type="checkbox">
+                    <label>Split OTP digits</label>
+                </div>
+                
+                <div class="ui divider"></div>
+                <button class="ui fluid button" id="settings-close-button">Close</button>
+            </div>
+        </div>
         
 
         <!-- Server input container-->
