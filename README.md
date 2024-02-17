@@ -3,8 +3,8 @@
 This is a web browser extension for the [OTP Manager](https://github.com/matteo-convertino/otpmanager-nextcloud) Nextcloud app. It allows you to quickly access your OTP codes from your browser.
 
 ## Download for your browser
-- [Chrome Web Store](https://chromewebstore.google.com/detail/otp-manager-browser-exten/meopmcadkhpcpoaigkhkadagiemblecc)
-- [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/otpmanager-browser/)
+- [Chrome Web Store](https://chromewebstore.google.com/detail/meopmcadkhpcpoaigkhkadagiemblecc)
+- [Firefox Add-ons](https://addons.mozilla.org/en-US/firefox/addon/simple-otpmanager-browser/)
 
 ## Instructions
 
