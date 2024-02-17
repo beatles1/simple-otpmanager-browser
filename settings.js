@@ -16,6 +16,8 @@ function readSettings() {
     console.log("Settings changed")
     window.settings.hideOTP = $("#settings-hide-otp-checkbox input").prop("checked")
     window.settings.splitOTP = $("#settings-split-otp-checkbox input").prop("checked")
+    window.settings.sortOn = $("#settings-sort-on-dropdown").val()
+    window.settings.sortOrder = $("#settings-sort-order-dropdown").val()
 
     // re-render
     displayOtp()
@@ -33,7 +35,11 @@ $( document ).ready( function() {
 
     $("#settings-hide-otp-checkbox input").on("change", readSettings)
     $("#settings-split-otp-checkbox input").on("change", readSettings)
+    $("#settings-sort-on-dropdown").on("change", readSettings)
+    $("#settings-sort-order-dropdown").on("change", readSettings)
 
     if (window.settings.hideOTP)  $("#settings-hide-otp-checkbox input").prop('checked', true)
     if (window.settings.splitOTP) $("#settings-split-otp-checkbox input").prop('checked', true)
+    if (window.settings.sortOn) $("#settings-sort-on-dropdown").val(window.settings.sortOn)
+    if (window.settings.sortOrder) $("#settings-sort-order-dropdown").val(window.settings.sortOrder)
 })

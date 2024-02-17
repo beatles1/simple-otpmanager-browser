@@ -2,6 +2,40 @@ function getAlgorithm(n) {
     return ["SHA1", "SHA256", "SHA512"][n];
 }
 
+// on: name, issuer, created
+// order: asc, desc
+function sortAccounts(on, order) {
+  if (order != "asc" && order != "desc") return false;
+  switch (on) {
+    case "name":
+      if (order == "asc") {
+        window.accounts.sort((a, b) => a.name.localeCompare(b.name))
+      } else {
+        window.accounts.sort((a, b) => b.name.localeCompare(a.name))
+      }
+      return true;
+
+    case "issuer":
+      if (order == "asc") {
+        window.accounts.sort((a, b) => a.issuer.localeCompare(b.issuer))
+      } else {
+        window.accounts.sort((a, b) => b.issuer.localeCompare(a.issuer))
+      }
+      return true;
+
+      case "created":
+        if (order == "asc") {
+          window.accounts.sort((a, b) => a.created_at.localeCompare(b.created_at))
+        } else {
+          window.accounts.sort((a, b) => b.created_at.localeCompare(a.created_at))
+        }
+        return true;
+
+      default:
+        return false;
+  }
+}
+
 function getOtpFromAccount(account) {
     const passHash = CryptoJS.SHA256(window.password).toString()
 
@@ -38,8 +72,6 @@ function getOtpFromAccount(account) {
           return hotp.generate();
         }
       }
-    
-
 }
 
 function generateAccountSegment(account) {
@@ -73,6 +105,10 @@ function displayOtp() {
     $("#otp-list").empty()
     $("#otp-container").show()
 
+    // Order accounts
+    sortAccounts(window.settings.sortOn ? window.settings.sortOn : "name", window.settings.sortOrder ? window.settings.sortOrder : "asc")
+
+    // Display accounts
     window.accounts.forEach(account => {
         generateAccountSegment(account)
     });

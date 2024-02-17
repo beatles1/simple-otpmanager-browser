@@ -77,7 +77,23 @@
                     <input type="checkbox">
                     <label>Split OTP digits</label>
                 </div>
-                
+
+                <div class="ui sub header">Sort</div>
+                <div class="ui grid">
+                    <div class="eight wide column">
+                        <select class="ui fluid selection dropdown" id="settings-sort-on-dropdown">
+                            <option value="name">Name</option>
+                            <option value="issuer">Issuer</option>
+                            <option value="created">Created</option>
+                        </select>
+                    </div>
+                    <div class="eight wide column">
+                        <select class="ui fluid selection dropdown" id="settings-sort-order-dropdown">
+                            <option value="asc">Ascending</option>
+                            <option value="desc">Descending</option>
+                        </select>
+                    </div>
+                </div>                
                 <div class="ui divider"></div>
                 <button class="ui fluid button" id="settings-close-button">Close</button>
             </div>
