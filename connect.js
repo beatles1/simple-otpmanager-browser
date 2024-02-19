@@ -28,13 +28,15 @@ function getInputtedServerURL() {
 
 async function getOTPManagerAccounts(server) {
     try {
-        const response = await fetch(server+ "/apps/otpmanager/accounts",)
+        const response = await fetch(server+ "/apps/otpmanager/accounts")
         const jsonData = await response.json()
         if (!response.ok || !jsonData.accounts) {
+            console.log("Failed to load accounts at: ", server+ "/apps/otpmanager/accounts")
             return false
         }
         return jsonData.accounts
     } catch {
+        console.log("Error loading: ", server+ "/apps/otpmanager/accounts")
         return false
     }
 }
@@ -64,19 +66,22 @@ async function connectToNextcloud(useSaved) {
 
     // Check if it's a Nextcloud server
     try {
-        const response = await fetch(server+ "/status.php",)
+        const response = await fetch(server+ "/status.php")
         const jsonData = await response.json()
         if (!response.ok) {
             showConnectError("Could not confirm URL is Nextcloud server")
+            console.log("No Nextcloud status returned: ", server+ "/status.php")
             return
         }
         if (!(jsonData.installed && jsonData.productname === "Nextcloud")) {
             showConnectError("Can't find valid Nextcloud install at given url")
+            console.log("No Nextcloud status returned: ", server+ "/status.php")
             return
         }
         console.log(jsonData)
     } catch {
         showConnectError("Failed to connect to server with given url")
+        console.log("Error loading: ", server+ "/status.php")
         return
     }
 
