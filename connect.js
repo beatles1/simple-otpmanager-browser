@@ -28,15 +28,15 @@ function getInputtedServerURL() {
 
 async function getOTPManagerAccounts(server) {
     try {
-        const response = await fetch(server+ "/apps/otpmanager/accounts")
+        const response = await fetch(server+ "/index.php/apps/otpmanager/accounts")
         const jsonData = await response.json()
         if (!response.ok || !jsonData.accounts) {
-            console.log("Failed to load accounts at: ", server+ "/apps/otpmanager/accounts")
+            console.log("Failed to load accounts at: ", server+ "/index.php/apps/otpmanager/accounts")
             return false
         }
         return jsonData.accounts
     } catch {
-        console.log("Error loading: ", server+ "/apps/otpmanager/accounts")
+        console.log("Error loading: ", server+ "/index.php/apps/otpmanager/accounts")
         return false
     }
 }

@@ -46,7 +46,7 @@ async function checkPassword(useSaved) {
 
     // Check password against server & store IV
     try {
-        const response = await fetch(window.server+ "/apps/otpmanager/password/check", {method: "POST", headers: {"Content-Type": "application/json",}, body: JSON.stringify({password: pass})})
+        const response = await fetch(window.server+ "/index.php/apps/otpmanager/password/check", {method: "POST", headers: {"Content-Type": "application/json",}, body: JSON.stringify({password: pass})})
         const jsonData = await response.json()
         if (!response.ok) {
             if (response.status === 400) {
