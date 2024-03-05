@@ -8,8 +8,4 @@ This is a web browser extension for the [OTP Manager](https://github.com/matteo-
 
 ## Instructions
 
-To use the extension first login to Nextcloud in your browser if you're not already logged in. The browser just uses your normal Nextcloud session to connect.
-
-Next open the extension and enter the Nextcloud server address, you should be prompted by your browser to allow the extension to use your existing login session.
-
-Finally enter your OTP Manager password and your accounts will be displayed.
+To use the extension open it and enter the Nextcloud server address, you should be prompted by your browser to allow the extension to access your server. Then either click the login button to open a new tab and grant access or copy the link and do so where Nextcloud is already logged in. Finally enter your OTP Manager password and your accounts will be displayed.
