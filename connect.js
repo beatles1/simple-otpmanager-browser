@@ -3,8 +3,7 @@ window.server = false
 
 const defaultHeaders = new Headers({
     "User-Agent": "Simple OTP Manager Browser Extension",
-    "OCS-APIRequest": "true",
-    "Content-Type": "application/x-www-form-urlencoded"
+    "OCS-APIRequest": "true"
 });
 
 let requestHeaders = defaultHeaders
@@ -38,7 +37,8 @@ function getInputtedServerURL() {
 async function getOTPManagerAccounts(server) {
     try {
         const response = await fetch(server+ "/index.php/apps/otpmanager/accounts", {
-            headers: requestHeaders
+            headers: requestHeaders,
+            credentials: "omit"
         })
         const jsonData = await response.json()
         if (response.status === 401) {
@@ -69,9 +69,10 @@ function getSavedNCLogin() {
 async function deleteSavedNCLogin() {
     // Try to delete from Nextcloud server
     try {
-        const response = await fetch(window.server+ "index.php/ocs/v2.php/core/apppassword", {
+        const response = await fetch(window.server+ "/ocs/v2.php/core/apppassword", {
             method: "DELETE",
-            headers: requestHeaders
+            headers: requestHeaders,
+            credentials: "omit"
         })
         if (response.ok) {
             console.log("appPassword deleted")
@@ -79,7 +80,7 @@ async function deleteSavedNCLogin() {
             console.log("appPassword failed to delete")
         }
     } catch {
-        console.log("Error deleting: ", window.server+ "/index.php/ocs/v2.php/core/apppassword")
+        console.log("Error deleting: ", window.server+ "/ocs/v2.php/core/apppassword")
     }
     // Delete from localstorage
     localStorage.removeItem("otpmanager-browser_NClogin")
@@ -91,9 +92,12 @@ async function setSavedNCLogin(pollJSON) {
     const poll = JSON.parse(pollJSON)
 
     try {
+        let headers = requestHeaders
+        headers.set("Content-Type", "application/x-www-form-urlencoded")
         const response = await fetch(poll.endpoint, {
             method: "POST",
-            headers: requestHeaders,
+            headers: headers,
+            credentials: "omit",
             body: "token="+ poll.token
         })
         const jsonData = await response.json()
@@ -122,7 +126,8 @@ async function startNClogin(server) {
     try {
         const response = await fetch(server+ "/index.php/login/v2", {
             method: "POST",
-            headers: requestHeaders
+            headers: requestHeaders,
+            credentials: "omit"
         })
         const jsonData = await response.json()
         if (!response.ok || !jsonData.poll || !jsonData.login) {
@@ -135,10 +140,15 @@ async function startNClogin(server) {
 
         // Prompt the user to open the login page
         $("#server-input-loginlink").show(50)
-        $("#server-input-loginlink button").on("click", function() {
+        $("#server-input-nc-login-button").on("click", function() {
             chrome.tabs.create({
                 url: jsonData.login,
             })
+        })
+        // Or copy the link to use elsewhere
+        $("#server-input-nc-copy-button").on("click", function() {
+            navigator.clipboard.writeText(jsonData.login)
+            $(this).fadeOut(100).fadeIn(100)
         })
         console.log("Login URL", jsonData.login)
 
@@ -235,10 +245,11 @@ async function connectToNextcloud(useSaved) {
     startPasswordCheck()
 }
 
-function signOut() {
+async function signOut() {
+    $("#sign-out-button").fadeOut(100)
     localStorage.removeItem("otpmanager-browser_server")
     localStorage.removeItem("otpmanager-browser_saved_password")
-    deleteSavedNCLogin()
+    await deleteSavedNCLogin()
     location.reload()
 
 }
