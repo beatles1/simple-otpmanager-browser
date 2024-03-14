@@ -32,7 +32,12 @@ function sortAccounts(on, order) {
         return true;
 
       default:
-        return false;
+        if (order == "asc") {
+          window.accounts.sort((a, b) => a.id > b.id)
+        } else {
+          window.accounts.sort((a, b) => b.id > a.id)
+        }
+        return true;
   }
 }
 
@@ -106,7 +111,7 @@ function displayOtp() {
     $("#otp-container").show()
 
     // Order accounts
-    sortAccounts(window.settings.sortOn ? window.settings.sortOn : "name", window.settings.sortOrder ? window.settings.sortOrder : "asc")
+    sortAccounts(window.settings.sortOn ? window.settings.sortOn : "default", window.settings.sortOrder ? window.settings.sortOrder : "asc")
 
     // Display accounts
     window.accounts.forEach(account => {
