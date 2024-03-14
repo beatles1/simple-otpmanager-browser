@@ -51,6 +51,7 @@ async function checkPassword(useSaved) {
         const response = await fetch(window.server+ "/index.php/apps/otpmanager/password/check", {
             method: "POST",
             headers: requestHeaders,
+            credentials: "omit",
             body: JSON.stringify({password: pass})
         })
         const jsonData = await response.json()
