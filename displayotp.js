@@ -33,9 +33,9 @@ function sortAccounts(on, order) {
 
       default:
         if (order == "asc") {
-          window.accounts.sort((a, b) => a.id > b.id)
+          window.accounts.sort((a, b) => a.position > b.position)
         } else {
-          window.accounts.sort((a, b) => b.id > a.id)
+          window.accounts.sort((a, b) => a.position < b.position)
         }
         return true;
   }
