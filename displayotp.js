@@ -63,7 +63,7 @@ function getOtpFromAccount(account) {
         return totp.generate();
       } else {
         if (account.counter == 0) {
-          account.code = "Click the button to generate HOTP code";
+          account.code = "Click to generate code";
         } else {
           const hotp = new OTPAuth.HOTP({
             issuer: account.issuer,
@@ -80,7 +80,7 @@ function getOtpFromAccount(account) {
 }
 
 function generateAccountSegment(account) {
-    const template = document.querySelector("#otp-template")
+    const template = document.querySelector(account.type === "totp" ? "#totp-template" : "#hotp-template")
     const clone = template.content.cloneNode(true)
     const icon = account.icon === "default" ? "img/vpn-key.svg" : "https://cdn.simpleicons.org/"+ account.icon
     clone.querySelector(".accounticon").src = icon
@@ -95,6 +95,10 @@ function generateAccountSegment(account) {
     }
     clone.querySelector(".otpcode span").textContent = otpText
     clone.querySelector(".otpcode span").setAttribute("data-otpvalue", otpValue)
+
+    if (account.type === "hotp") {
+      clone.querySelector(".refreshbutton").setAttribute("data-accountid", account.id)
+    }
 
     document.querySelector("#otp-list").appendChild(clone)
 }
@@ -122,6 +126,26 @@ function displayOtp() {
     $(".otpcode").on("click", function() {
         navigator.clipboard.writeText($(this).find("span").attr("data-otpvalue"))
         $(this).fadeOut(200).fadeIn(200)
+    })
+
+    // Increase hotp counter on click
+    $(".refreshbutton").on("click", function() {
+      $(this).fadeOut(200)
+      const accountid = $(this).attr("data-accountid")
+      if (accountid) {
+        for (var i in window.accounts) {
+          if (window.accounts[i].id == accountid) {
+            window.accounts[i].counter += 1
+            break
+          }
+        }
+        displayOtp()  // Instead of doing this, just update the text and data- attrib?
+        searchOtp()
+      } else {
+        console.log("Can't get accountid from attribute")
+      }
+      
+      $(this).fadeIn(200)
     })
 
     // Search
