@@ -132,15 +132,25 @@ function displayOtp() {
     $(".refreshbutton").on("click", function() {
       $(this).fadeOut(200)
       const accountid = $(this).attr("data-accountid")
+      let account = null
       if (accountid) {
         for (var i in window.accounts) {
           if (window.accounts[i].id == accountid) {
             window.accounts[i].counter += 1
+            account = window.accounts[i]
             break
           }
         }
-        displayOtp()  // Instead of doing this, just update the text and data- attrib?
-        searchOtp()
+        
+        const otpValue = getOtpFromAccount(account)
+        let otpText = window.settings.hideOTP ? "******" : otpValue
+        if (window.settings.splitOTP) {
+          const m = Math.floor(otpText.length/2)
+          otpText = otpText.substring(0, m) +" "+ otpText.substring(m)
+        }
+        console.log($(this).parent().parent().find(".twelve .otpcode span"))
+        $(this).parent().parent().find(".twelve").find(".otpcode span").text(otpText)
+        $(this).parent().parent().find(".twelve").find(".otpcode span").attr("data-otpvalue", otpValue)
       } else {
         console.log("Can't get accountid from attribute")
       }
