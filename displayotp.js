@@ -63,7 +63,7 @@ function getOtpFromAccount(account) {
         return totp.generate();
       } else {
         if (account.counter == 0) {
-          account.code = "Click the button to generate HOTP code";
+          account.code = "Click to generate code";
         } else {
           const hotp = new OTPAuth.HOTP({
             issuer: account.issuer,
@@ -80,7 +80,7 @@ function getOtpFromAccount(account) {
 }
 
 function generateAccountSegment(account) {
-    const template = document.querySelector("#otp-template")
+    const template = document.querySelector(account.type === "totp" ? "#totp-template" : "#hotp-template")
     const clone = template.content.cloneNode(true)
     const icon = account.icon === "default" ? "img/vpn-key.svg" : "https://cdn.simpleicons.org/"+ account.icon
     clone.querySelector(".accounticon").src = icon
@@ -96,7 +96,55 @@ function generateAccountSegment(account) {
     clone.querySelector(".otpcode span").textContent = otpText
     clone.querySelector(".otpcode span").setAttribute("data-otpvalue", otpValue)
 
+    if (account.type === "hotp") {
+      clone.querySelector(".refreshbutton").setAttribute("data-accountid", account.id)
+    }
+
     document.querySelector("#otp-list").appendChild(clone)
+}
+
+async function stepHOTP(accountid) {
+  let account = null
+  for (var i in window.accounts) {
+    if (window.accounts[i].id == accountid) {
+      window.accounts[i].counter += 1
+      account = window.accounts[i]
+      break
+    }
+  }
+
+  if (account) {
+    // Update Locally
+    const otpValue = getOtpFromAccount(account)
+    let otpText = window.settings.hideOTP ? "******" : otpValue
+    if (window.settings.splitOTP) {
+      const m = Math.floor(otpText.length/2)
+      otpText = otpText.substring(0, m) +" "+ otpText.substring(m)
+    }
+    const refresbutton = $(".refreshbutton[data-accountid='" + accountid +"']");
+    refresbutton.parent().parent().find(".twelve").find(".otpcode span").text(otpText)
+    refresbutton.parent().parent().find(".twelve").find(".otpcode span").attr("data-otpvalue", otpValue)
+
+    // Update Server
+    try {
+      let headers = requestHeaders
+      headers.set("Content-Type", "application/x-www-form-urlencoded")
+      const response = await fetch(server+ "/ocs/v2.php/apps/otpmanager/accounts/update-counter", {
+        method: "POST",
+        headers: headers,
+        credentials: "omit",
+        body: "secret="+ encodeURIComponent(account.secret)
+      })
+      const jsonData = await response.json()
+      if (!response.ok) {
+        console.log("Failed to update HOTP token on server for id (a): "+ accountid)
+      }
+    } catch {
+      console.log("Failed to update HOTP token on server for id (b): "+ accountid)
+    }
+  } else {
+    console.log("HOTP counter update: Can't find account")
+  }
 }
 
 function displayOtp() {
@@ -122,6 +170,14 @@ function displayOtp() {
     $(".otpcode").on("click", function() {
         navigator.clipboard.writeText($(this).find("span").attr("data-otpvalue"))
         $(this).fadeOut(200).fadeIn(200)
+    })
+
+    // Increase hotp counter on click
+    $(".refreshbutton").on("click", async function() {
+      $(this).fadeOut(200)
+      const accountid = $(this).attr("data-accountid")
+      await stepHOTP(accountid)
+      $(this).fadeIn(200)
     })
 
     // Search

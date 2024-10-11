@@ -38,6 +38,10 @@
                 cursor: pointer;
                 padding-top: 10px;
             }
+            .refreshbutton {
+                text-align: center;
+                margin-top: 12px;
+            }
             #sign-out-button {
                 position: absolute;
                 top: 20px;
@@ -165,11 +169,27 @@
         <br />
 
         <!-- Template for OTP segment -->
-        <template id="otp-template">
+        <template id="totp-template">
             <div class="ui segment">
                 <div class="ui grid">
                     <div class="four wide column">
                         <div><img class="accounticon" src="{account.icon}" /></div>
+                    </div>
+                    <div class="twelve wide column">
+                        <div class="accountname">{account.name}</div>
+                        <div><span class="ui grey text accountissuer">{account.issuer}</span></div>
+                        <div class="otpcode"><span class="ui big text">{otpcode}</span> <i class="copy outline icon"></i></div>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template id="hotp-template">
+            <div class="ui segment">
+                <div class="ui grid">
+                    <div class="four wide column">
+                        <div><img class="accounticon" src="{account.icon}" /></div>
+                        <div class="refreshbutton"><i class="large link redo icon"></i></div>
                     </div>
                     <div class="twelve wide column">
                         <div class="accountname">{account.name}</div>
