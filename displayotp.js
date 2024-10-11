@@ -103,6 +103,50 @@ function generateAccountSegment(account) {
     document.querySelector("#otp-list").appendChild(clone)
 }
 
+async function stepHOTP(accountid) {
+  let account = null
+  for (var i in window.accounts) {
+    if (window.accounts[i].id == accountid) {
+      window.accounts[i].counter += 1
+      account = window.accounts[i]
+      break
+    }
+  }
+
+  if (account) {
+    // Update Locally
+    const otpValue = getOtpFromAccount(account)
+    let otpText = window.settings.hideOTP ? "******" : otpValue
+    if (window.settings.splitOTP) {
+      const m = Math.floor(otpText.length/2)
+      otpText = otpText.substring(0, m) +" "+ otpText.substring(m)
+    }
+    const refresbutton = $(".refreshbutton[data-accountid='" + accountid +"']");
+    refresbutton.parent().parent().find(".twelve").find(".otpcode span").text(otpText)
+    refresbutton.parent().parent().find(".twelve").find(".otpcode span").attr("data-otpvalue", otpValue)
+
+    // Update Server
+    try {
+      let headers = requestHeaders
+      headers.set("Content-Type", "application/x-www-form-urlencoded")
+      const response = await fetch(server+ "/ocs/v2.php/apps/otpmanager/accounts/update-counter", {
+        method: "POST",
+        headers: headers,
+        credentials: "omit",
+        body: "secret="+ encodeURIComponent(account.secret)
+      })
+      const jsonData = await response.json()
+      if (!response.ok) {
+        console.log("Failed to update HOTP token on server for id (a): "+ accountid)
+      }
+    } catch {
+      console.log("Failed to update HOTP token on server for id (b): "+ accountid)
+    }
+  } else {
+    console.log("HOTP counter update: Can't find account")
+  }
+}
+
 function displayOtp() {
     if (!window.accounts) {
         console.log("No accounts???")
@@ -132,50 +176,7 @@ function displayOtp() {
     $(".refreshbutton").on("click", async function() {
       $(this).fadeOut(200)
       const accountid = $(this).attr("data-accountid")
-      let account = null
-      for (var i in window.accounts) {
-        if (window.accounts[i].id == accountid) {
-          window.accounts[i].counter += 1
-          account = window.accounts[i]
-          break
-        }
-      }
-
-      if (accountid && account) {
-        // Update Locally
-        const otpValue = getOtpFromAccount(account)
-        let otpText = window.settings.hideOTP ? "******" : otpValue
-        if (window.settings.splitOTP) {
-          const m = Math.floor(otpText.length/2)
-          otpText = otpText.substring(0, m) +" "+ otpText.substring(m)
-        }
-        console.log($(this).parent().parent().find(".twelve .otpcode span"))
-        $(this).parent().parent().find(".twelve").find(".otpcode span").text(otpText)
-        $(this).parent().parent().find(".twelve").find(".otpcode span").attr("data-otpvalue", otpValue)
-
-        // Update Server
-        try {
-          let headers = requestHeaders
-          headers.set("Content-Type", "application/x-www-form-urlencoded")
-          const response = await fetch(server+ "/ocs/v2.php/apps/otpmanager/accounts/update-counter", {
-            method: "POST",
-            headers: headers,
-            credentials: "omit",
-            body: "secret="+ encodeURIComponent(account.secret)
-          })
-          const jsonData = await response.json()
-          if (!response.ok) {
-            console.log("Failed to update HOTP token for id: "+ accountid)
-            return false
-          }
-        } catch {
-          console.log("Failed to update HOTP token for id: "+ accountid)
-          return false
-        }
-      } else {
-        console.log("HOTP counter update: Can't get accountid from attr or can't find account")
-      }
-      
+      await stepHOTP(accountid)
       $(this).fadeIn(200)
     })
 
