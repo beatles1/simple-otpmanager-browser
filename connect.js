@@ -50,7 +50,11 @@ async function getOTPManagerAccounts(server) {
             showConnectError("Could not load accounts from OTP Manager. Please check the server is healthy and the OTP Manager extension is installed.")
             return false
         }
-        return jsonData.accounts
+        const merged = [
+            ...(jsonData.accounts || []),
+            ...(jsonData.shared_accounts || [])
+        ]
+        return merged
     } catch {
         console.log("Error loading: ", server+ "/index.php/apps/otpmanager/accounts")
         showConnectError("Could not load accounts from OTP Manager. Please check the server is healthy and the OTP Manager extension is installed.")
