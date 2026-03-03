@@ -48,7 +48,7 @@ async function checkPassword(useSaved) {
     try {
         let headers = requestHeaders
         headers.set("Content-Type", "application/json")
-        const response = await fetch(window.server+ "/ocs/v2.php/apps/otpmanager/password/check", {
+        const response = await fetch(window.server+ "/ocs/v2.php/apps/otpmanager/password/check?format=json", {
             method: "POST",
             headers: requestHeaders,
             credentials: "omit",
@@ -56,18 +56,24 @@ async function checkPassword(useSaved) {
         })
         const jsonData = await response.json()
         if (!response.ok) {
+            // Try to extract error from OCS wrapper or top-level
+            const error = jsonData.ocs?.data?.error || jsonData.error || "Failed"
             if (response.status === 400) {
-                showPasswordError(jsonData.error)
+                showPasswordError(error)
             } else {
                 showPasswordError("Failed")
             }
             return
         }
-        if (!jsonData.iv) {
+
+        // OCS v1.0.0+ wraps the response in ocs.data
+        const data = jsonData.ocs?.data || jsonData
+
+        if (!data.iv) {
             showPasswordError("Failed to get IV from password check")
             return
         }
-        window.accountIV = jsonData.iv
+        window.accountIV = data.iv
     } catch {
         showPasswordError("Failed to check password")
         return
