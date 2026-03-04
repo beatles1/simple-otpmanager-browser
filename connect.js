@@ -7,7 +7,6 @@ const defaultHeaders = new Headers({
 });
 
 let requestHeaders = defaultHeaders
-  
 
 function showConnectError(text) {
     $("#server-input-error p").text(text)
@@ -18,45 +17,91 @@ function showConnectError(text) {
 
 function getInputtedServerURL() {
     let server = $("#server-input input").val()
+
     if (!server) {
         showConnectError("Please enter Nextcloud server address")
         return false
     }
+
     $("#server-input-error").hide()
 
-    server = server.trim()  // Remove whitespace
-    server = server.replace(/\/+$/, "")    // Remove trailing /
-
+    server = server.trim() // Remove whitespace
+    server = server.replace(/\/+$/, "") // Remove trailing /
 
     if (server.search(/https:\/\/|http:\/\//gm) === -1) {
         return "https://"+ server
     }
+
     return server
 }
 
 async function getOTPManagerAccounts(server) {
+    // Try OCS endpoint first (v1.0.0+), fall back to legacy endpoint (v0.5.x)
+    const ocsUrl = server + "/ocs/v2.php/apps/otpmanager/accounts?format=json"
+    const legacyUrl = server + "/index.php/apps/otpmanager/accounts"
+
+    // Try OCS endpoint (v1.0.0+)
     try {
-        const response = await fetch(server+ "/index.php/apps/otpmanager/accounts", {
+        const response = await fetch(ocsUrl, {
             headers: requestHeaders,
             credentials: "omit"
         })
+
+        if (response.status === 401) {
+            showConnectError("Not authenticated, please connect again to login.")
+            deleteSavedNCLogin()
+            return false
+        }
+
+        if (response.ok) {
+            const jsonData = await response.json()
+
+            // OCS v1.0.0+ returns accounts directly as ocs.data array
+            const data = jsonData.ocs?.data
+
+            if (Array.isArray(data)) {
+                return data
+            }
+
+            // In case future versions wrap it in {accounts: [], shared_accounts: []}
+            if (data && data.accounts) {
+                return [
+                    ...(data.accounts || []),
+                    ...(data.shared_accounts || [])
+                ]
+            }
+        }
+    } catch (e) {
+        console.log("OCS endpoint failed, trying legacy endpoint: ", e)
+    }
+
+    // Fall back to legacy endpoint (v0.5.x)
+    try {
+        const response = await fetch(legacyUrl, {
+            headers: requestHeaders,
+            credentials: "omit"
+        })
+
         const jsonData = await response.json()
+
         if (response.status === 401) {
             showConnectError("Not authenticated, please connect again to login.")
             deleteSavedNCLogin()
             return false
         } else if (!response.ok || !jsonData.accounts) {
-            console.log("Failed to load accounts at: ", server+ "/index.php/apps/otpmanager/accounts")
+            console.log("Failed to load accounts at: ", legacyUrl)
             showConnectError("Could not load accounts from OTP Manager. Please check the server is healthy and the OTP Manager extension is installed.")
             return false
         }
+
         const merged = [
             ...(jsonData.accounts || []),
             ...(jsonData.shared_accounts || [])
         ]
+
         return merged
     } catch {
-        console.log("Error loading: ", server+ "/index.php/apps/otpmanager/accounts")
+        console.log("Error loading accounts from both OCS and legacy endpoints")
         showConnectError("Could not load accounts from OTP Manager. Please check the server is healthy and the OTP Manager extension is installed.")
         return false
     }
@@ -64,9 +109,11 @@ async function getOTPManagerAccounts(server) {
 
 function getSavedNCLogin() {
     const login = JSON.parse(localStorage.getItem("otpmanager-browser_NClogin"))
+
     if (login && login.username && login.appPassword) {
         return login
     }
+
     return false
 }
 
@@ -78,6 +125,7 @@ async function deleteSavedNCLogin() {
             headers: requestHeaders,
             credentials: "omit"
         })
+
         if (response.ok) {
             console.log("appPassword deleted")
         } else {
@@ -86,8 +134,10 @@ async function deleteSavedNCLogin() {
     } catch {
         console.log("Error deleting: ", window.server+ "/ocs/v2.php/core/apppassword")
     }
+
     // Delete from localstorage
     localStorage.removeItem("otpmanager-browser_NClogin")
+
     // Delete from headers we're currently using
     requestHeaders = defaultHeaders
 }
@@ -98,13 +148,16 @@ async function setSavedNCLogin(pollJSON) {
     try {
         let headers = requestHeaders
         headers.set("Content-Type", "application/x-www-form-urlencoded")
+
         const response = await fetch(poll.endpoint, {
             method: "POST",
             headers: headers,
             credentials: "omit",
             body: "token="+ poll.token
         })
+
         const jsonData = await response.json()
+
         // 404 means authentication wasn't completed for this token
         if (response.status === 404) {
             showConnectError("Last Nextcloud login not complete, please try again")
@@ -118,6 +171,7 @@ async function setSavedNCLogin(pollJSON) {
         // We have a username and password
         localStorage.setItem("otpmanager-browser_NClogin", JSON.stringify({username: jsonData.loginName, appPassword: jsonData.appPassword}))
         localStorage.removeItem("otpmanager-browser_NCloginPoll")
+
         return true
     } catch {
         console.log("Error loading: ", poll.endpoint)
@@ -133,7 +187,9 @@ async function startNClogin(server) {
             headers: requestHeaders,
             credentials: "omit"
         })
+
         const jsonData = await response.json()
+
         if (!response.ok || !jsonData.poll || !jsonData.login) {
             console.log("Failed to start login process at: ", server+ "/index.php/login/v2")
             return false
@@ -149,11 +205,13 @@ async function startNClogin(server) {
                 url: jsonData.login,
             })
         })
+
         // Or copy the link to use elsewhere
         $("#server-input-nc-copy-button").on("click", function() {
             navigator.clipboard.writeText(jsonData.login)
             $(this).fadeOut(100).fadeIn(100)
         })
+
         console.log("Login URL", jsonData.login)
 
         return true
@@ -169,6 +227,7 @@ async function connectToNextcloud(useSaved) {
 
     // Get server URL either saved or from form
     let server = false
+
     if (useSaved) {
         server = localStorage.getItem("otpmanager-browser_server")
         $("#server-input input").val(server.replace("https://", ""))
@@ -177,9 +236,11 @@ async function connectToNextcloud(useSaved) {
         if (!server) {
             return false
         }
+
         // Request permission to load the specific Nextcloud server. We've requested *.* but we have to then specifically ask for domains under that.
         const permission = { origins: [server+ "/"] }
-        const permReq = await chrome.permissions.request(permission)    // Should be browser. but chrome is too important for that
+        const permReq = await chrome.permissions.request(permission) // Should be browser. but chrome is too important for that
+
         if (!permReq) {
             showConnectError("Not granted permissions to connect")
             return
@@ -189,24 +250,27 @@ async function connectToNextcloud(useSaved) {
     // Check if it's a Nextcloud server
     try {
         const response = await fetch(server+ "/status.php")
+
         const jsonData = await response.json()
+
         if (!response.ok) {
             showConnectError("Could not confirm URL is Nextcloud server")
             console.log("No Nextcloud status returned: ", server+ "/status.php")
             return
         }
+
         if (!(jsonData.installed && jsonData.productname === "Nextcloud")) {
             showConnectError("Can't find valid Nextcloud install at given url")
             console.log("No Nextcloud status returned: ", server+ "/status.php")
             return
         }
+
         console.log(jsonData)
     } catch {
         showConnectError("Failed to connect to server with given url")
         console.log("Error loading: ", server+ "/status.php")
         return
     }
-
 
     // Save URL as it's an NC server
     localStorage.setItem("otpmanager-browser_server", server)
@@ -223,6 +287,7 @@ async function connectToNextcloud(useSaved) {
 
     // Check if we have login details
     let login = getSavedNCLogin()
+
     if (useSaved && login) {
         // Add login details to our headers
         requestHeaders.set('Authorization', 'Basic ' + btoa(login.username + ":" + login.appPassword));
@@ -239,6 +304,7 @@ async function connectToNextcloud(useSaved) {
     if (!accounts) {
         return
     }
+
     window.accounts = accounts
 
     // We've now got something saved so let the user "logout"
@@ -251,11 +317,12 @@ async function connectToNextcloud(useSaved) {
 
 async function signOut() {
     $("#sign-out-button").fadeOut(100)
+
     localStorage.removeItem("otpmanager-browser_server")
     localStorage.removeItem("otpmanager-browser_saved_password")
     await deleteSavedNCLogin()
-    location.reload()
 
+    location.reload()
 }
 
 // Register event handlers for url box
@@ -263,6 +330,7 @@ $( document ).ready( function() {
     $("#server-input input").keypress(function(e) {
         if (e.which === 13) connectToNextcloud(false)
     })
+
     $("#server-input i").on("click", function() {connectToNextcloud(false)})
 
     $("#server-input input").focus()
