@@ -25,9 +25,9 @@ function sortAccounts(on, order) {
 
       case "created":
         if (order == "asc") {
-          window.accounts.sort((a, b) => a.created_at.localeCompare(b.created_at))
+          window.accounts.sort((a, b) => (a.createdAt || "").localeCompare(b.createdAt || ""))
         } else {
-          window.accounts.sort((a, b) => b.created_at.localeCompare(a.created_at))
+          window.accounts.sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""))
         }
         return true;
 
