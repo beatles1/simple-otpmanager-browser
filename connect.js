@@ -259,9 +259,9 @@ async function connectToNextcloud(useSaved) {
             return
         }
 
-        if (!(jsonData.installed && jsonData.productname === "Nextcloud")) {
-            showConnectError("Can't find valid Nextcloud install at given url")
-            console.log("No Nextcloud status returned: ", server+ "/status.php")
+        if (!(jsonData.installed)) {
+            showConnectError("Nextcloud invalid or not installed")
+            console.log("Nextcloud not showing as installed at: ", server+ "/status.php")
             return
         }
 
